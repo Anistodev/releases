@@ -14,11 +14,6 @@ jobs:
         with:
           repository: Anistodev/code
 
-      - name: Set timestamp
-        id: timestamp
-        run: echo "BUILD_TIME=$(date +'%Y%m%d_%H%M')" >> $env:GITHUB_ENV
-        shell: bash
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -41,8 +36,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: app-v${{ env.BUILD_TIME }}
-          releaseName: "Anisto v${{ env.BUILD_TIME }}"
+          tagName: app-v__VERSION__
+          releaseName: "Anisto v__VERSION__"
           releaseBody: "See the assets to download this version and install."
           releaseDraft: true
           prerelease: false
