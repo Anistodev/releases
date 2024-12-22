@@ -1,0 +1,45 @@
+name: "Build Latest commit"
+
+jobs:
+  build:
+    permissions:
+      contents: write
+    
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: Anistodev/code
+
+      - name: Set timestamp
+        id: timestamp
+        run: echo "BUILD_TIME=$(date +'%Y%m%d_%H%M')" >> $env:GITHUB_ENV
+        shell: bash
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - name: Install frontend dependencies
+        run: pnpm install
+        
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build with Tauri
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: app-v${{ env.BUILD_TIME }}
+          releaseName: "Anisto v${{ env.BUILD_TIME }}"
+          releaseBody: "See the assets to download this version and install."
+          releaseDraft: true
+          prerelease: false
